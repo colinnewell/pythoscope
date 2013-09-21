@@ -8,6 +8,7 @@ import sys
 import traceback
 import types
 import warnings
+import codecs
 
 from pythoscope.compat import groupby, set, sorted
 from pythoscope.py_wrapper_object import get_wrapper_self
@@ -109,6 +110,11 @@ def read_file_contents(filename, binary=False):
     fd = file(filename, file_mode('r', binary))
     contents = fd.read()
     fd.close()
+    coding = re.search('coding\s*:\s*([-\w]+)\s*-\*-', contents, re.I)
+    if coding:
+        fd = codecs.open(filename, encoding=coding.group(1))
+        contents = fd.read()
+        fd.close()
     return contents
 
 def write_content_to_file(string, filename, binary=False):
